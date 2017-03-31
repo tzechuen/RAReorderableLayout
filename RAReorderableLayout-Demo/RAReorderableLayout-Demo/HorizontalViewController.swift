@@ -8,92 +8,95 @@
 
 import UIKit
 
+
 class HorizontalViewController: UIViewController, RAReorderableLayoutDelegate, RAReorderableLayoutDataSource {
-    
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var gradientView: UIView!
     private var gradientLayer: CAGradientLayer?
     private var books: [Book] = []
     
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title = "RAReorderableLayout"
-        self.collectionView.registerClass(BookCell.self, forCellWithReuseIdentifier: "horizontalCell")
-        self.collectionView.delegate = self
-        self.collectionView.dataSource = self
-        (self.collectionView.collectionViewLayout as! RAReorderableLayout).scrollDirection = .Horizontal
-        self.applyGradation()
+        title = "RAReorderableLayout"
+        collectionView.register(BookCell.self, forCellWithReuseIdentifier: "horizontalCell")
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        (collectionView.collectionViewLayout as! RAReorderableLayout).scrollDirection = .horizontal
+        applyGradation()
         
-        let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        for (index, _) in alphabet.characters.enumerate() {
-            let charIndex = alphabet.startIndex.advancedBy(index)
-            var title = "BOOK "
-            title += alphabet.substringWithRange(charIndex...charIndex)
-            let color = UIColor(hue: 255.0 / 26.0 * CGFloat(index) / 255.0, saturation: 1.0, brightness: 0.9, alpha: 1.0)
-            let book = Book(title: title, color: color)
-            self.books.append(book)
+        let aScalars = "A".unicodeScalars
+        let zScalars = "Z".unicodeScalars
+        let aAsciiCode = aScalars[aScalars.startIndex].value
+        let zAsciiCode = zScalars[zScalars.startIndex].value
+        books = (aAsciiCode...zAsciiCode)
+            .flatMap(UnicodeScalar.init)
+            .map(Character.init)
+            .enumerated()
+            .map {
+                let title = "Book \(String($1))"
+                let color = UIColor(hue: 255.0 / 26.0 * CGFloat($0) / 255.0, saturation: 1.0, brightness: 0.9, alpha: 1.0)
+                return .init(title: title, color: color)
         }
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        self.collectionView.contentInset = UIEdgeInsetsMake(self.topLayoutGuide.length, 0, 0, 0)
-        self.gradientLayer?.frame = self.gradientView.bounds
+        gradientLayer?.frame = gradientView.bounds
     }
     
     private func applyGradation() {
-        self.gradientLayer = CAGradientLayer()
-        self.gradientLayer!.frame = self.gradientView.bounds
-        let mainColor = UIColor(white: 0, alpha: 0.3).CGColor
-        let subColor = UIColor.clearColor().CGColor
-        self.gradientLayer!.colors = [subColor, mainColor]
-        self.gradientLayer!.locations = [0, 1]
-        self.gradientView.layer.insertSublayer(self.gradientLayer!, atIndex: 0)
+        gradientLayer = CAGradientLayer()
+        gradientLayer!.frame = gradientView.bounds
+        let mainColor = UIColor(white: 0, alpha: 0.3).cgColor
+        let subColor = UIColor.clear.cgColor
+        gradientLayer!.colors = [subColor, mainColor]
+        gradientLayer!.locations = [0, 1]
+        gradientView.layer.insertSublayer(gradientLayer!, at: 0)
     }
     
     // collectionView delegate datasource
     
-    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
     
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.books.count
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return books.count
     }
     
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
-        return CGSizeMake(130.0, 170.0)
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: 130.0, height: 170.0)
     }
     
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAtIndex section: Int) -> UIEdgeInsets {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsetsMake(0, 20.0, 0, 20.0)
     }
     
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAtIndex section: Int) -> CGFloat {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 20.0
     }
     
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         var cell: BookCell
-        cell = self.collectionView.dequeueReusableCellWithReuseIdentifier("horizontalCell", forIndexPath: indexPath) as! BookCell
-        cell.book = self.books[indexPath.item]
+        cell = collectionView.dequeueReusableCell(withReuseIdentifier: "horizontalCell", for: indexPath) as! BookCell
+        cell.book = books[(indexPath as NSIndexPath).item]
         return cell
     }
     
-    func collectionView(collectionView: UICollectionView, atIndexPath: NSIndexPath, didMoveToIndexPath toIndexPath: NSIndexPath) {
-        let book = self.books.removeAtIndex(atIndexPath.item)
-        self.books.insert(book, atIndex: toIndexPath.item)
+    func collectionView(_ collectionView: UICollectionView, at: IndexPath, willMoveTo toIndexPath: IndexPath) {
+        
     }
     
-    func scrollTrigerEdgeInsetsInCollectionView(collectionView: UICollectionView) -> UIEdgeInsets {
+    func collectionView(_ collectionView: UICollectionView, at: IndexPath, didMoveTo toIndexPath: IndexPath) {
+        let book = books.remove(at: (toIndexPath as NSIndexPath).item)
+        books.insert(book, at: (toIndexPath as NSIndexPath).item)
+    }
+    
+    func scrollTrigerEdgeInsetsInCollectionView(_ collectionView: UICollectionView) -> UIEdgeInsets {
         return UIEdgeInsetsMake(0, 50, 0, 50)
     }
     
-    func scrollSpeedValueInCollectionView(collectionView: UICollectionView) -> CGFloat {
+    func scrollSpeedValueInCollectionView(_ collectionView: UICollectionView) -> CGFloat {
         return 15.0
     }
 }
@@ -106,15 +109,15 @@ class BookCell: UICollectionViewCell {
     private var titleLabel: UILabel!
     var book: Book? {
         didSet {
-            self.titleLabel.text = book?.title
-            self.color = book?.color
+            titleLabel.text = book?.title
+            color = book?.color
         }
     }
     var color: UIColor? {
         didSet {
-            self.backCoverView.backgroundColor = self.getDarkColor(color, minusValue: 20.0)
-            self.frontCoverView.backgroundColor = color
-            self.bindingView.backgroundColor = self.getDarkColor(color, minusValue: 50.0)
+            backCoverView.backgroundColor = getDarkColor(color, minusValue: 20.0)
+            frontCoverView.backgroundColor = color
+            bindingView.backgroundColor = getDarkColor(color, minusValue: 50.0)
         }
     }
     
@@ -124,72 +127,72 @@ class BookCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.configure()
+        configure()
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        self.titleLabel.text = nil
+        titleLabel.text = nil
     }
     
     private func configure() {
-        self.backCoverView = UIView(frame: self.bounds)
-        self.backCoverView.backgroundColor = self.getDarkColor(UIColor.redColor(), minusValue: 20.0)
-        self.backCoverView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+        backCoverView = UIView(frame: bounds)
+        backCoverView.backgroundColor = getDarkColor(UIColor.red, minusValue: 20.0)
+        backCoverView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         
-        self.pagesView = UIView(frame: CGRectMake(15.0, 0, CGRectGetWidth(self.bounds) - 25.0, CGRectGetHeight(self.bounds) - 5.0))
-        self.pagesView.backgroundColor = UIColor.whiteColor()
-        self.pagesView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+        pagesView = UIView(frame: CGRect(x: 15.0, y: 0, width: bounds.width - 25.0, height: bounds.height - 5.0))
+        pagesView.backgroundColor = UIColor.white
+        pagesView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         
-        self.frontCoverView = UIView(frame: CGRectMake(0, 0, CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds) - 10.0))
-        self.frontCoverView.backgroundColor = UIColor.redColor()
-        self.frontCoverView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+        frontCoverView = UIView(frame: CGRect(x: 0, y: 0, width: bounds.width, height: bounds.height - 10.0))
+        frontCoverView.backgroundColor = UIColor.red
+        frontCoverView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         
-        self.bindingView = UIView(frame: CGRectMake(0, 0, 15.0, CGRectGetHeight(self.bounds)))
-        self.bindingView.backgroundColor = self.getDarkColor(self.backCoverView?.backgroundColor, minusValue: 50.0)
-        self.bindingView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
-        self.bindingView.layer.borderWidth = 1.0
-        self.bindingView.layer.borderColor = UIColor.blackColor().CGColor
+        bindingView = UIView(frame: CGRect(x: 0, y: 0, width: 15.0, height: bounds.height))
+        bindingView.backgroundColor = getDarkColor(backCoverView?.backgroundColor, minusValue: 50.0)
+        bindingView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        bindingView.layer.borderWidth = 1.0
+        bindingView.layer.borderColor = UIColor.black.cgColor
         
-        self.titleLabel = UILabel(frame: CGRectMake(15.0, 30.0, CGRectGetWidth(self.bounds) - 16.0, 30.0))
-        self.titleLabel.backgroundColor = UIColor(white: 1.0, alpha: 0.8)
-        self.titleLabel.textColor = UIColor.blackColor()
-        self.titleLabel.textAlignment = .Center
-        self.titleLabel.font = UIFont.boldSystemFontOfSize(20.0)
+        titleLabel = UILabel(frame: CGRect(x: 15.0, y: 30.0, width: bounds.width - 16.0, height: 30.0))
+        titleLabel.backgroundColor = UIColor(white: 1.0, alpha: 0.8)
+        titleLabel.textColor = UIColor.black
+        titleLabel.textAlignment = .center
+        titleLabel.font = UIFont.boldSystemFont(ofSize: 20.0)
         
-        self.contentView.addSubview(self.backCoverView)
-        self.contentView.addSubview(self.pagesView)
-        self.contentView.addSubview(self.frontCoverView)
-        self.contentView.addSubview(self.bindingView)
-        self.contentView.addSubview(self.titleLabel)
+        contentView.addSubview(backCoverView)
+        contentView.addSubview(pagesView)
+        contentView.addSubview(frontCoverView)
+        contentView.addSubview(bindingView)
+        contentView.addSubview(titleLabel)
         
-        let backPath = UIBezierPath(roundedRect: self.backCoverView!.bounds, byRoundingCorners: [.TopRight, .BottomRight], cornerRadii: CGSizeMake(10.0, 10.0))
+        let backPath = UIBezierPath(roundedRect: backCoverView!.bounds, byRoundingCorners: [.topRight, .bottomRight], cornerRadii: CGSize(width: 10.0, height: 10.0))
         let backMask = CAShapeLayer()
-        backMask.frame = self.backCoverView!.bounds
-        backMask.path = backPath.CGPath
+        backMask.frame = backCoverView!.bounds
+        backMask.path = backPath.cgPath
         let backLineLayer = CAShapeLayer()
-        backLineLayer.frame = self.backCoverView!.bounds
-        backLineLayer.path = backPath.CGPath
-        backLineLayer.strokeColor = UIColor.blackColor().CGColor
-        backLineLayer.fillColor = UIColor.clearColor().CGColor
+        backLineLayer.frame = backCoverView!.bounds
+        backLineLayer.path = backPath.cgPath
+        backLineLayer.strokeColor = UIColor.black.cgColor
+        backLineLayer.fillColor = UIColor.clear.cgColor
         backLineLayer.lineWidth = 2.0
-        self.backCoverView!.layer.mask = backMask
-        self.backCoverView!.layer.insertSublayer(backLineLayer, atIndex: 0)
+        backCoverView!.layer.mask = backMask
+        backCoverView!.layer.insertSublayer(backLineLayer, at: 0)
         
-        let frontPath = UIBezierPath(roundedRect: self.frontCoverView!.bounds, byRoundingCorners: [.TopRight, .BottomRight], cornerRadii: CGSizeMake(10.0, 10.0))
+        let frontPath = UIBezierPath(roundedRect: frontCoverView!.bounds, byRoundingCorners: [.topRight, .bottomRight], cornerRadii: CGSize(width: 10.0, height: 10.0))
         let frontMask = CAShapeLayer()
-        frontMask.frame = self.frontCoverView!.bounds
-        frontMask.path = frontPath.CGPath
+        frontMask.frame = frontCoverView!.bounds
+        frontMask.path = frontPath.cgPath
         let frontLineLayer = CAShapeLayer()
-        frontLineLayer.path = frontPath.CGPath
-        frontLineLayer.strokeColor = UIColor.blackColor().CGColor
-        frontLineLayer.fillColor = UIColor.clearColor().CGColor
+        frontLineLayer.path = frontPath.cgPath
+        frontLineLayer.strokeColor = UIColor.black.cgColor
+        frontLineLayer.fillColor = UIColor.clear.cgColor
         frontLineLayer.lineWidth = 2.0
-        self.frontCoverView!.layer.mask = frontMask
-        self.frontCoverView!.layer.insertSublayer(frontLineLayer, atIndex: 0)
+        frontCoverView!.layer.mask = frontMask
+        frontCoverView!.layer.insertSublayer(frontLineLayer, at: 0)
     }
     
-    private func getDarkColor(color: UIColor?, minusValue: CGFloat) -> UIColor? {
+    private func getDarkColor(_ color: UIColor?, minusValue: CGFloat) -> UIColor? {
         if color == nil {
             return nil
         }

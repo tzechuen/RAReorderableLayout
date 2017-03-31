@@ -12,17 +12,34 @@ RAReorderableLayout
 ## Animation
 ![animated gif](https://github.com/ra1028/RAReorderableLayout/raw/master/Assets/animation.gif)
 
+## Requirements
+- Swift 3.0 / Xcode 8  
+OS X 10.9 or later
+iOS 8.0 or later
+watchOS 2.0 or later
+tvOS 9.0 or later
+
+_Still wanna use swift2.2 or 2.3?_  
+-> You can use [0.5.0](https://github.com/ra1028/RAReorderableLayout/tree/0.5.0) instead.
 
 ## Installation
-__iOS8__  
-1. Add to your Podfile as follows.  
-    use_frameworks!  
-    pod 'RAReorderableLayout'  
-2. pod intall  
+__iOS8 or later__  
 
-__iOS7__  
-1. Simply copy RAReorderableLayout.swift into your project.
+### CocoaPods
+```ruby
+# Podfile  
+use_frameworks!  
 
+target 'YOUR_TARGET_NAME' do
+  pod 'RAReorderableLayout'
+end
+
+```
+### Carthage
+```ruby
+ # Cartfile
+ github "ra1028/RAReorderableLayout"
+```
 
 ## Usage
 Setup your collection view to use RAReorderableLayout.  
@@ -53,15 +70,6 @@ optional func scrollTrigerEdgeInsetsInCollectionView(collectionView: UICollectio
 optional func scrollTrigerPaddingInCollectionView(collectionView: UICollectionView) -> UIEdgeInsets
 optional func scrollSpeedValueInCollectionView(collectionView: UICollectionView) -> CGFloat
 ```
-
-
-## Property
-```
-var trigerInsets: UIEdgeInsets = UIEdgeInsetsMake(100.0, 100.0, 100.0, 100.0)
-var trigerPadding: UIEdgeInsets = UIEdgeInsetsZero
-var scrollSpeedValue: CGFloat = 10.0
-```
-
 
 ## License
 RAReorderableLayout is available under the MIT license. See the LICENSE file for more info.
