@@ -8,7 +8,7 @@
 
 import UIKit
 
-open protocol RAReorderableLayoutDelegate: UICollectionViewDelegateFlowLayout {
+public protocol RAReorderableLayoutDelegate: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, at: IndexPath, willMoveTo toIndexPath: IndexPath)
     func collectionView(_ collectionView: UICollectionView, at: IndexPath, didMoveTo toIndexPath: IndexPath)
     func collectionView(_ collectionView: UICollectionView, allowMoveAt indexPath: IndexPath) -> Bool
@@ -20,7 +20,7 @@ open protocol RAReorderableLayoutDelegate: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, collectionView layout: RAReorderableLayout, didEndDraggingItemTo indexPath: IndexPath)
 }
 
-open protocol RAReorderableLayoutDataSource: UICollectionViewDataSource {
+public protocol RAReorderableLayoutDataSource: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int
     
@@ -30,7 +30,7 @@ open protocol RAReorderableLayoutDataSource: UICollectionViewDataSource {
     func scrollSpeedValueInCollectionView(_ collectionView: UICollectionView) -> CGFloat
 }
 
-open extension RAReorderableLayoutDataSource {
+public extension RAReorderableLayoutDataSource {
     func collectionView(_ collectionView: UICollectionView, reorderingItemAlphaInSection section: Int) -> CGFloat {
         return 0
     }
@@ -45,7 +45,7 @@ open extension RAReorderableLayoutDataSource {
     }
 }
 
-open extension RAReorderableLayoutDelegate {
+public extension RAReorderableLayoutDelegate {
     func collectionView(_ collectionView: UICollectionView, at: IndexPath, willMoveTo toIndexPath: IndexPath) {}
     func collectionView(_ collectionView: UICollectionView, at: IndexPath, didMoveTo toIndexPath: IndexPath) {}
     func collectionView(_ collectionView: UICollectionView, allowMoveAt indexPath: IndexPath) -> Bool {
